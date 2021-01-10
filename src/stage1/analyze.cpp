@@ -4637,40 +4637,25 @@ ZigType *get_src_ptr_type(ZigType *type) {
 }
 
 Error get_codegen_ptr_type(CodeGen *g, ZigType *type, ZigType **result) {
-    Error err;
-
-    ZigType *ty = get_src_ptr_type(type);
-    if (ty == nullptr) {
-        *result = nullptr;
-        return ErrorNone;
-    }
-
-    *result = ty;
+    *result = get_src_ptr_type(type);
     return ErrorNone;
 }
 
 ZigType *get_codegen_ptr_type_bail(CodeGen *g, ZigType *type) {
-    Error err;
-    ZigType *result;
-    if ((err = get_codegen_ptr_type(g, type, &result))) {
-        codegen_report_errors_and_exit(g);
-    }
-    return result;
+    ZigType *ret;
+    assertNoError(get_codegen_ptr_type(g, type, &ret));
+    return ret;
 }
 
 bool type_is_nonnull_ptr(CodeGen *g, ZigType *type) {
-    Error err;
     bool result;
-    if ((err = type_is_nonnull_ptr2(g, type, &result))) {
-        codegen_report_errors_and_exit(g);
-    }
+    assertNoError(type_is_nonnull_ptr2(g, type, &result));
     return result;
 }
 
 Error type_is_nonnull_ptr2(CodeGen *g, ZigType *type, bool *result) {
-    Error err;
     ZigType *ptr_type;
-    if ((err = get_codegen_ptr_type(g, type, &ptr_type))) return err;
+    assertNoError(get_codegen_ptr_type(g, type, &ptr_type));
     *result = ptr_type == type && !ptr_allows_addr_zero(type);
     return ErrorNone;
 }
